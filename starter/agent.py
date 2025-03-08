@@ -21,7 +21,16 @@ def compute_utility(board, color):
     INPUT: a game state and the player that is in control
     OUTPUT: an integer that represents utility
     """
-    raise RuntimeError("Method not implemented") # Replace this line!
+    p1_score, p2_score = get_score(board)
+
+    util = None
+    if color == 1:
+        util = p1_score - p2_score
+
+    if color == 2:
+        util = p2_score - p1_score
+
+    return util
 
 def compute_heuristic(board, color):
     # IMPLEMENT! 
@@ -44,7 +53,22 @@ def minimax_min_node(board, color, limit, caching = 0):
     # 3. If not, for each possible move, get the max utiltiy
     # 4. After checking every move, you can find the minimum utility
     # ...
-    raise RuntimeError("Method not implemented") # Replace this line!
+
+    possible_moves = get_possible_moves(board, color)
+    if len(possible_moves) == 0:
+        return compute_utility(board, color)
+    
+    min_util = 10000000000000
+    for i in possible_moves:
+        next_move = play_move(board, color, i[0], i[1])
+        if color == 1:
+            util = minimax_max_node(next_move,2,limit,caching)
+        else:
+            util = minimax_max_node(next_move,1,limit,caching)
+        min_util = min(min_util,util)
+    
+    return min_util
+
 
 
 def minimax_max_node(board, color, limit, caching = 0):
@@ -58,7 +82,20 @@ def minimax_max_node(board, color, limit, caching = 0):
     # 3. If not, for each possible move, get the min utiltiy
     # 4. After checking every move, you can find the maximum utility
     # ...
-    raise RuntimeError("Method not implemented") # Replace this line!
+    possible_moves = get_possible_moves(board, color)
+    if len(possible_moves) == 0:
+        return compute_utility(board, color)
+    
+    max_util = -10000000000000
+    for i in possible_moves:
+        next_move = play_move(board, color, i[0], i[1])
+        if color == 1:
+            util = minimax_min_node(next_move,2,limit,caching)
+        else:
+            util = minimax_min_node(next_move,1,limit,caching)
+        max_util = max(max_util,util)
+    
+    return max_util 
 
     
 def select_move_minimax(board, color, limit, caching = 0):
@@ -74,7 +111,30 @@ def select_move_minimax(board, color, limit, caching = 0):
     INPUT: a game state, the player that is in control, the depth limit for the search, and a flag determining whether state caching is on or not
     OUTPUT: a tuple of integers (i,j) representing a move, where i is the column and j is the row on the board.
     """
-    raise RuntimeError("Method not implemented") # Replace this line!
+    possible_moves = get_possible_moves(board, color)
+    if len(possible_moves) == 0:
+        return None
+    
+    if color == 1:
+        max_util = -10000000000000
+    if color == 2:
+        max_util = 10000000000000
+
+    best_move = None
+    for i in possible_moves:
+        next_move = play_move(board, color, i[0], i[1])
+        if color == 1:
+            util = minimax_min_node(board, 2, limit, caching)
+            if util > max_util:
+                max_util = util
+                best_move = i
+        
+        if color == 2:
+            util = minimax_max_node(board, 1, limit, caching)
+            if util < max_util:
+                max_util = util
+                best_move = i
+    return best_move
 
 
 ############ ALPHA-BETA PRUNING #####################
