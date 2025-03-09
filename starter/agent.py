@@ -22,6 +22,7 @@ def compute_utility(board, color):
     OUTPUT: an integer that represents utility
     """
     p1_score, p2_score = get_score(board)
+    print("Player 1 Score:", p1_score, "Player 2 Score:", p2_score)
 
     util = None
     if color == 1:
@@ -41,6 +42,8 @@ def compute_heuristic(board, color):
     """
     raise RuntimeError("Method not implemented") # Replace this line!
 
+
+
 ############ MINIMAX ###############################
 def minimax_min_node(board, color, limit, caching = 0):
     # IMPLEMENT!
@@ -53,21 +56,18 @@ def minimax_min_node(board, color, limit, caching = 0):
     # 3. If not, for each possible move, get the max utiltiy
     # 4. After checking every move, you can find the minimum utility
     # ...
-
     possible_moves = get_possible_moves(board, color)
+    opp = 3-color
+
     if len(possible_moves) == 0:
-        return compute_utility(board, color)
+        return compute_utility(board, opp)
     
-    min_util = 10000000000000
+    highest_util = []
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        if color == 1:
-            util = minimax_max_node(next_move,2,limit,caching)
-        else:
-            util = minimax_max_node(next_move,1,limit,caching)
-        min_util = min(min_util,util)
-    
-    return min_util
+        util = minimax_max_node(next_move,opp,limit,caching)
+        highest_util.append(util)
+    return min(highest_util)
 
 
 
@@ -83,19 +83,19 @@ def minimax_max_node(board, color, limit, caching = 0):
     # 4. After checking every move, you can find the maximum utility
     # ...
     possible_moves = get_possible_moves(board, color)
+    opp = 3-color
+
     if len(possible_moves) == 0:
         return compute_utility(board, color)
     
-    max_util = -10000000000000
+    lowest_util = []
+
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        if color == 1:
-            util = minimax_min_node(next_move,2,limit,caching)
-        else:
-            util = minimax_min_node(next_move,1,limit,caching)
-        max_util = max(max_util,util)
+        util = minimax_min_node(next_move,opp,limit,caching)
+        lowest_util.append(util)
     
-    return max_util 
+    return max(lowest_util)
 
     
 def select_move_minimax(board, color, limit, caching = 0):
@@ -112,29 +112,20 @@ def select_move_minimax(board, color, limit, caching = 0):
     OUTPUT: a tuple of integers (i,j) representing a move, where i is the column and j is the row on the board.
     """
     possible_moves = get_possible_moves(board, color)
-    if len(possible_moves) == 0:
-        return None
-    
-    if color == 1:
-        max_util = -10000000000000
-    if color == 2:
-        max_util = 10000000000000
+    opp = 3-color
 
     best_move = None
+    max_util = float('-inf')
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        if color == 1:
-            util = minimax_min_node(board, 2, limit, caching)
-            if util > max_util:
-                max_util = util
-                best_move = i
-        
-        if color == 2:
-            util = minimax_max_node(board, 1, limit, caching)
-            if util < max_util:
-                max_util = util
-                best_move = i
+        util = minimax_min_node(next_move, opp, limit, caching)
+        if util > max_util:
+            max_util = util
+            best_move = i
     return best_move
+
+SMALL_BOARDS = [((1, 0, 0, 2), (1, 1, 2, 0), (1, 1, 1, 1), (1, 2, 2, 2))]
+select_move_minimax(SMALL_BOARDS[0], 1, 6)
 
 
 ############ ALPHA-BETA PRUNING #####################
