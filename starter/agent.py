@@ -60,10 +60,12 @@ def minimax_min_node(board, color, limit, caching = 0):
     possible_moves = get_possible_moves(board, opp)
     highest_util = []
     moves_list = []
+    best_move = None
+    utility = None
 
 
     if len(possible_moves) == 0 or limit == 0:
-        return None, compute_utility(board, color)
+        return best_move, compute_utility(board, color)
 
     for i in possible_moves:
         next_move = play_move(board, opp, i[0], i[1])
@@ -72,7 +74,9 @@ def minimax_min_node(board, color, limit, caching = 0):
         highest_util.append(util)
 
     idx = highest_util.index(min(highest_util))
-    return moves_list[idx]
+    best_move = moves_list[idx][0]
+    utility = moves_list[idx][1]
+    return best_move, utility
 
 
 def minimax_max_node(board, color, limit, caching = 0):
@@ -87,10 +91,10 @@ def minimax_max_node(board, color, limit, caching = 0):
     # 4. After checking every move, you can find the maximum utility
     # ...
     possible_moves = get_possible_moves(board, color)
-    opp = 3 - color
     lowest_util = []
     moves_list = []
     best_move = None
+    utility = None
 
     if len(possible_moves) == 0 or limit == 0:
         return best_move, compute_utility(board, color)
@@ -102,7 +106,9 @@ def minimax_max_node(board, color, limit, caching = 0):
         lowest_util.append(util)
 
     idx = lowest_util.index(max(lowest_util))
-    return moves_list[idx]
+    best_move = moves_list[idx][0]
+    utility = moves_list[idx][1]
+    return best_move, utility
 
     
 def select_move_minimax(board, color, limit, caching = 0):
