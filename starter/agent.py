@@ -59,13 +59,13 @@ def minimax_min_node(board, color, limit, caching = 0):
     possible_moves = get_possible_moves(board, color)
     opp = 3-color
 
-    if len(possible_moves) == 0:
+    if len(possible_moves) == 0 or limit == 0:
         return compute_utility(board, opp)
-    
+
     highest_util = []
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        util = minimax_max_node(next_move,opp,limit,caching)
+        util = minimax_max_node(next_move,opp,limit-1,caching)
         highest_util.append(util)
     return min(highest_util)
 
@@ -85,14 +85,14 @@ def minimax_max_node(board, color, limit, caching = 0):
     possible_moves = get_possible_moves(board, color)
     opp = 3-color
 
-    if len(possible_moves) == 0:
+    if len(possible_moves) == 0 or limit == 0:
         return compute_utility(board, color)
     
     lowest_util = []
 
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        util = minimax_min_node(next_move,opp,limit,caching)
+        util = minimax_min_node(next_move,opp,limit-1,caching)
         lowest_util.append(util)
     
     return max(lowest_util)
