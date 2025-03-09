@@ -6,6 +6,7 @@ import random
 import sys
 import time
 
+from tests import *
 # You can use the functions from othello_shared to write your AI
 from othello_shared import find_lines, get_possible_moves, get_score, play_move
 
@@ -22,7 +23,6 @@ def compute_utility(board, color):
     OUTPUT: an integer that represents utility
     """
     p1_score, p2_score = get_score(board)
-    print("Player 1 Score:", p1_score, "Player 2 Score:", p2_score)
 
     util = None
     if color == 1:
@@ -56,19 +56,23 @@ def minimax_min_node(board, color, limit, caching = 0):
     # 3. If not, for each possible move, get the max utiltiy
     # 4. After checking every move, you can find the minimum utility
     # ...
-    possible_moves = get_possible_moves(board, color)
-    opp = 3-color
+    opp = 3 - color
+    possible_moves = get_possible_moves(board, opp)
+    highest_util = []
+    moves_list = []
+
 
     if len(possible_moves) == 0 or limit == 0:
-        return compute_utility(board, opp)
+        return None, compute_utility(board, color)
 
-    highest_util = []
     for i in possible_moves:
-        next_move = play_move(board, color, i[0], i[1])
-        util = minimax_max_node(next_move,opp,limit-1,caching)
+        next_move = play_move(board, opp, i[0], i[1])
+        _, util = minimax_max_node(next_move, color, limit - 1, caching)
+        moves_list.append((i, util))
         highest_util.append(util)
-    return min(highest_util)
 
+    idx = highest_util.index(min(highest_util))
+    return moves_list[idx]
 
 
 def minimax_max_node(board, color, limit, caching = 0):
@@ -83,19 +87,22 @@ def minimax_max_node(board, color, limit, caching = 0):
     # 4. After checking every move, you can find the maximum utility
     # ...
     possible_moves = get_possible_moves(board, color)
-    opp = 3-color
+    opp = 3 - color
+    lowest_util = []
+    moves_list = []
+    best_move = None
 
     if len(possible_moves) == 0 or limit == 0:
-        return compute_utility(board, color)
-    
-    lowest_util = []
+        return best_move, compute_utility(board, color)
 
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        util = minimax_min_node(next_move,opp,limit-1,caching)
+        _, util = minimax_min_node(next_move, color, limit - 1, caching)
+        moves_list.append([i, util])
         lowest_util.append(util)
-    
-    return max(lowest_util)
+
+    idx = lowest_util.index(max(lowest_util))
+    return moves_list[idx]
 
     
 def select_move_minimax(board, color, limit, caching = 0):
@@ -111,22 +118,9 @@ def select_move_minimax(board, color, limit, caching = 0):
     INPUT: a game state, the player that is in control, the depth limit for the search, and a flag determining whether state caching is on or not
     OUTPUT: a tuple of integers (i,j) representing a move, where i is the column and j is the row on the board.
     """
-    possible_moves = get_possible_moves(board, color)
-    opp = 3-color
-
-    best_move = None
-    max_util = float('-inf')
-    for i in possible_moves:
-        next_move = play_move(board, color, i[0], i[1])
-        util = minimax_min_node(next_move, opp, limit, caching)
-        if util > max_util:
-            max_util = util
-            best_move = i
+    
+    best_move, _ = minimax_max_node(board, color, limit, caching)
     return best_move
-
-SMALL_BOARDS = [((1, 0, 0, 2), (1, 1, 2, 0), (1, 1, 1, 1), (1, 2, 2, 2))]
-select_move_minimax(SMALL_BOARDS[0], 1, 6)
-
 
 ############ ALPHA-BETA PRUNING #####################
 def alphabeta_min_node(board, color, alpha, beta, limit, caching = 0, ordering = 0):
