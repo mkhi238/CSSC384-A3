@@ -128,7 +128,6 @@ def select_move_minimax(board, color, limit, caching = 0):
     best_move = None
     max_util = float('-inf')
     
-
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
         _, util = minimax_min_node(next_move, color, limit - 1, caching)
@@ -138,24 +137,63 @@ def select_move_minimax(board, color, limit, caching = 0):
 
     return best_move
 
-
-    #best_move, _ = minimax_max_node(board, color, limit, caching)
-    #return best_move
-
 ############ ALPHA-BETA PRUNING #####################
 def alphabeta_min_node(board, color, alpha, beta, limit, caching = 0, ordering = 0):
     # IMPLEMENT!
     """
     A helper function for alpha-beta that finds the lowest possible utility (don't forget to utilize and update alpha and beta!)
     """
-    raise RuntimeError("Method not implemented") # Replace this line!
+    opp = 3 - color
+    possible_moves = get_possible_moves(board, opp)
+    highest_util = []
+    moves_list = []
+    best_move = None
+    utility = None
+
+    if len(possible_moves) == 0 or limit == 0:
+        return best_move, compute_utility(board, color)
+
+    for i in possible_moves:
+        next_move = play_move(board, opp, i[0], i[1])
+        _, util = alphabeta_max_node(next_move, color, alpha, beta, limit - 1, caching)
+        moves_list.append((i, util))
+        highest_util.append(util)
+        beta = min(beta, util)
+        if beta <= alpha:
+            break
+
+    idx = highest_util.index(min(highest_util))
+    best_move = moves_list[idx][0]
+    utility = moves_list[idx][1]
+    return best_move, utility
 
 def alphabeta_max_node(board, color, alpha, beta, limit, caching = 0, ordering = 0):
     # IMPLEMENT!
     """
     A helper function for alpha-beta that finds the highest possible utility (don't forget to utilize and update alpha and beta!)
     """
-    raise RuntimeError("Method not implemented") # Replace this line!
+    possible_moves = get_possible_moves(board, color)
+    lowest_util = []
+    moves_list = []
+    best_move = None
+    utility = None
+
+    if len(possible_moves) == 0 or limit == 0:
+        return best_move, compute_utility(board, color)
+
+    for i in possible_moves:
+        next_move = play_move(board, color, i[0], i[1])
+        _, util = minimax_min_node(next_move, color, limit - 1, caching)
+        moves_list.append([i, util])
+        lowest_util.append(util)
+        alpha = max(alpha, util)
+        if alpha >= beta:
+            break
+
+    idx = lowest_util.index(max(lowest_util))
+    best_move = moves_list[idx][0]
+    utility = moves_list[idx][1]
+    return best_move, utility
 
 def select_move_alphabeta(board, color, limit = -1, caching = 0, ordering = 0):
     # IMPLEMENT!
@@ -172,7 +210,24 @@ def select_move_alphabeta(board, color, limit = -1, caching = 0, ordering = 0):
     INPUT: a game state, the player that is in control, the depth limit for the search, a flag determining whether state caching is on or not, a flag determining whether node ordering is on or not
     OUTPUT: a tuple of integers (i,j) representing a move, where i is the column and j is the row on the board.
     """
-    raise RuntimeError("Method not implemented") # Replace this line!
+    possible_moves = get_possible_moves(board, color)
+    best_move = None
+    max_util = float('-inf')
+    alpha = float('-inf')
+    beta = float('inf')
+
+    
+    for i in possible_moves:
+        next_move = play_move(board, color, i[0], i[1])
+        _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching)
+        if util > max_util:
+            max_util = util
+            best_move = i
+        alpha = max(alpha, util)
+        if beta <= alpha:
+            break
+        
+    return best_move
 
 ####################################################
 def run_ai():
