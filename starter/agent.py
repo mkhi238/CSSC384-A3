@@ -124,9 +124,23 @@ def select_move_minimax(board, color, limit, caching = 0):
     INPUT: a game state, the player that is in control, the depth limit for the search, and a flag determining whether state caching is on or not
     OUTPUT: a tuple of integers (i,j) representing a move, where i is the column and j is the row on the board.
     """
+    possible_moves = get_possible_moves(board, color)
+    best_move = None
+    max_util = float('-inf')
     
-    best_move, _ = minimax_max_node(board, color, limit, caching)
+
+    for i in possible_moves:
+        next_move = play_move(board, color, i[0], i[1])
+        _, util = minimax_min_node(next_move, color, limit - 1, caching)
+        if util > max_util:
+            max_util = util
+            best_move = i
+
     return best_move
+
+
+    #best_move, _ = minimax_max_node(board, color, limit, caching)
+    #return best_move
 
 ############ ALPHA-BETA PRUNING #####################
 def alphabeta_min_node(board, color, alpha, beta, limit, caching = 0, ordering = 0):
