@@ -77,7 +77,7 @@ def minimax_min_node(board, color, limit, caching = 0):
         highest_util.append(util)
         if caching == 1:
             if i not in cache:
-                cache[next_move] = [i,util]
+                cache[next_move] = (i,util)
 
     idx = highest_util.index(min(highest_util))
     best_move = moves_list[idx][0]
@@ -116,7 +116,7 @@ def minimax_max_node(board, color, limit, caching = 0):
         lowest_util.append(util)
         if caching == 1:
             if i not in cache:
-                cache[next_move] = [i,util]
+                cache[next_move] = (i,util)
 
     idx = lowest_util.index(max(lowest_util))
     best_move = moves_list[idx][0]
@@ -152,9 +152,7 @@ def select_move_minimax(board, color, limit, caching = 0):
             best_move = i
             if caching == 1:
                 if i not in cache:
-                    cache[next_move] = [i,util]
-
-
+                    cache[next_move] = (i,util)
     return best_move
 
 ############ ALPHA-BETA PRUNING #####################
@@ -177,9 +175,10 @@ def alphabeta_min_node(board, color, alpha, beta, limit, caching = 0, ordering =
     if len(possible_moves) == 0 or limit == 0:
         return best_move, compute_utility(board, color)
 
+
     for i in possible_moves:
         next_move = play_move(board, opp, i[0], i[1])
-        _, util = alphabeta_max_node(next_move, color, alpha, beta, limit - 1, caching)
+        _, util = alphabeta_max_node(next_move, color, alpha, beta, limit - 1, caching, ordering)
         moves_list.append((i, util))
         highest_util.append(util)
         beta = min(beta, util)
@@ -195,6 +194,8 @@ def alphabeta_min_node(board, color, alpha, beta, limit, caching = 0, ordering =
         cache[board] = (best_move, utility)
 
     return best_move, utility
+
+
 
 def alphabeta_max_node(board, color, alpha, beta, limit, caching = 0, ordering = 0):
     # IMPLEMENT!
@@ -212,10 +213,20 @@ def alphabeta_max_node(board, color, alpha, beta, limit, caching = 0, ordering =
 
     if len(possible_moves) == 0 or limit == 0:
         return best_move, compute_utility(board, color)
+    
+    if ordering == 1:
+        moves = []
+        for j in possible_moves:
+            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+        ordered_moves = sorted(moves, key=lambda x: -x[1])
+        possible_moves = []
+        for k in ordered_moves:
+            possible_moves.append(k[0])
 
+        
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching)
+        _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching, ordering)
         moves_list.append((i, util))
         lowest_util.append(util)
         alpha = max(alpha, util)
@@ -254,10 +265,20 @@ def select_move_alphabeta(board, color, limit = -1, caching = 0, ordering = 0):
 
     if caching == 1:
         cache.clear()
+
+    if ordering == 1:
+        moves = []
+        for j in possible_moves:
+            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+        ordered_moves = sorted(moves, key=lambda x: -x[1])
+        possible_moves = []
+        for k in ordered_moves:
+            possible_moves.append(k[0])
+
     
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching)
+        _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching, ordering)
         if util > max_util:
             max_util = util
             best_move = i
