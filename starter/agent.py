@@ -174,6 +174,15 @@ def alphabeta_min_node(board, color, alpha, beta, limit, caching = 0, ordering =
     
     if len(possible_moves) == 0 or limit == 0:
         return best_move, compute_utility(board, color)
+    
+    if ordering == 1:
+        moves = []
+        for j in possible_moves:
+            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+        ordered_moves = sorted(moves, key=lambda x: -x[1])
+        possible_moves = []
+        for k in ordered_moves:
+            possible_moves.append(k[0])
 
 
     for i in possible_moves:
