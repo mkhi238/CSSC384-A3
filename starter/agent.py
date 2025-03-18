@@ -39,7 +39,7 @@ def compute_heuristic(board, color):
     Method to heuristic value of board, to be used if we are at a depth limit.
     INPUT: a game state and the player that is in control
     OUTPUT: an integer that represents heuristic value
-    """
+
     util = compute_utility(board, color)
 
     mobility = len(get_possible_moves(board, color)) - len(get_possible_moves(board,3-color))
@@ -63,6 +63,7 @@ def compute_heuristic(board, color):
     else:
         hval = 20*util + 10*mobility + 10*corner_hold_score
     return hval
+"""
     
     
 
