@@ -40,7 +40,31 @@ def compute_heuristic(board, color):
     INPUT: a game state and the player that is in control
     OUTPUT: an integer that represents heuristic value
     """
-    raise RuntimeError("Method not implemented") # Replace this line!
+    util = compute_utility(board, color)
+
+    mobility = len(get_possible_moves(board, color)) - len(get_possible_moves(board,3-color))
+
+    corners_vals = [0,7]
+    corner_hold_score = 0
+    for i in corners_vals:
+        for j in corners_vals:
+            if board[i][j] == color:
+                corner_hold_score += 1
+            if board[i][j] == 3-color:
+                corner_hold_score -= 1
+
+    p1_score, p2_score = get_score(board)
+    total_score = p1_score + p2_score
+
+    if total_score < 20:
+        hval = 10*util + 11.2*mobility + 20.3*corner_hold_score
+    elif total_score>20 and total_score <40:
+        hval = 10*util + 5*mobility + 20*corner_hold_score
+    else:
+        hval = 20*util + 10*mobility + 10*corner_hold_score
+    return hval
+    
+    
 
 
 
