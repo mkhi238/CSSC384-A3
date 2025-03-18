@@ -39,6 +39,7 @@ def compute_heuristic(board, color):
     Method to heuristic value of board, to be used if we are at a depth limit.
     INPUT: a game state and the player that is in control
     OUTPUT: an integer that represents heuristic value
+    """
 
     util = compute_utility(board, color)
 
@@ -63,8 +64,7 @@ def compute_heuristic(board, color):
     else:
         hval = 20*util + 10*mobility + 10*corner_hold_score
     return hval
-"""
-    
+
     
 
 
@@ -164,6 +164,7 @@ def select_move_minimax(board, color, limit, caching = 0):
     """
     if caching == 1:
         cache.clear()
+    else: caching = 0
 
     possible_moves = get_possible_moves(board, color)
     best_move = None
@@ -299,6 +300,7 @@ def select_move_alphabeta(board, color, limit = -1, caching = 0, ordering = 0):
 
     if caching == 1:
         cache.clear()
+    else: caching = 0
 
     if ordering == 1:
         moves = []
@@ -308,6 +310,7 @@ def select_move_alphabeta(board, color, limit = -1, caching = 0, ordering = 0):
         possible_moves = []
         for k in ordered_moves:
             possible_moves.append(k[0])
+    else: ordering = 0
 
     
     for i in possible_moves:
