@@ -193,21 +193,21 @@ def select_move_minimax(board, color, limit, caching = 0):
 #     best_move = None
 #     utility = None
 
-    if caching == 1:
-        if board in cache:
-            return cache[board]
+    # if caching == 1:
+    #     if board in cache:
+    #         return cache[board]
     
 #     if len(possible_moves) == 0 or limit == 0:
 #         return best_move, compute_utility(board, color)
     
-    if ordering == 1:
-        moves = []
-        for j in possible_moves:
-            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
-        ordered_moves = sorted(moves, key=lambda x: -x[1])
-        possible_moves = []
-        for k in ordered_moves:
-            possible_moves.append(k[0])
+    # if ordering == 1:
+    #     moves = []
+    #     for j in possible_moves:
+    #         moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+    #     ordered_moves = sorted(moves, key=lambda x: -x[1])
+    #     possible_moves = []
+    #     for k in ordered_moves:
+    #         possible_moves.append(k[0])
 
 
 #     for i in possible_moves:
@@ -224,8 +224,8 @@ def select_move_minimax(board, color, limit, caching = 0):
 #     best_move = moves_list[idx][0]
 #     utility = moves_list[idx][1]
 
-    if caching == 1:
-        cache[board] = (best_move, utility)
+    # if caching == 1:
+    #     cache[board] = (best_move, utility)
 
 #     return best_move, utility
 
@@ -276,7 +276,7 @@ def select_move_minimax(board, color, limit, caching = 0):
 
 #     return best_move, utility
 
-# def select_move_alphabeta(board, color, limit = -1, caching = 0, ordering = 0):
+def select_move_alphabeta(board, color, limit = -1, caching = 0, ordering = 0):
 #     # IMPLEMENT!
 #     """
 #     Given a board and a player color, decide on a move using Alpha-Beta algorithm. 
@@ -323,7 +323,7 @@ def select_move_minimax(board, color, limit, caching = 0):
 #         if beta <= alpha:
 #             break
 
-#     return best_move
+     return None
 
 ####################################################
 def run_ai():
