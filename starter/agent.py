@@ -150,6 +150,7 @@ def minimax_max_node(board, color, limit, caching = 0):
 
     
 def select_move_minimax(board, color, limit, caching = 0):
+    print(caching)
     # IMPLEMENT!
     """
     Given a board and a player color, decide on a move using Minimax algorithm. 
@@ -174,39 +175,39 @@ def select_move_minimax(board, color, limit, caching = 0):
         if util > max_util:
             max_util = util
             best_move = i
-            # if caching == 1:
-            #     if i not in cache:
-            #         cache[next_move] = (i,util)
+            if caching == 1:
+                if i not in cache:
+                    cache[next_move] = (i,util)
     return best_move
 
 ############ ALPHA-BETA PRUNING #####################
-# def alphabeta_min_node(board, color, alpha, beta, limit, caching = 0, ordering = 0):
-#     # IMPLEMENT!
-#     """
-#     A helper function for alpha-beta that finds the lowest possible utility (don't forget to utilize and update alpha and beta!)
-#     """
-#     opp = 3 - color
-#     possible_moves = get_possible_moves(board, opp)
-#     highest_util = []
-#     moves_list = []
-#     best_move = None
-#     utility = None
+def alphabeta_min_node(board, color, alpha, beta, limit, caching = 0, ordering = 0):
+    # IMPLEMENT!
+    """
+    A helper function for alpha-beta that finds the lowest possible utility (don't forget to utilize and update alpha and beta!)
+    """
+    opp = 3 - color
+    possible_moves = get_possible_moves(board, opp)
+    highest_util = []
+    moves_list = []
+    best_move = None
+    utility = None
 
-#     if caching == 1:
-#         if board in cache:
-#             return cache[board]
+    if caching == 1:
+        if board in cache:
+            return cache[board]
     
 #     if len(possible_moves) == 0 or limit == 0:
 #         return best_move, compute_utility(board, color)
     
-#     if ordering == 1:
-#         moves = []
-#         for j in possible_moves:
-#             moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
-#         ordered_moves = sorted(moves, key=lambda x: -x[1])
-#         possible_moves = []
-#         for k in ordered_moves:
-#             possible_moves.append(k[0])
+    if ordering == 1:
+        moves = []
+        for j in possible_moves:
+            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+        ordered_moves = sorted(moves, key=lambda x: -x[1])
+        possible_moves = []
+        for k in ordered_moves:
+            possible_moves.append(k[0])
 
 
 #     for i in possible_moves:
@@ -223,8 +224,8 @@ def select_move_minimax(board, color, limit, caching = 0):
 #     best_move = moves_list[idx][0]
 #     utility = moves_list[idx][1]
 
-#     if caching == 1:
-#         cache[board] = (best_move, utility)
+    if caching == 1:
+        cache[board] = (best_move, utility)
 
 #     return best_move, utility
 
@@ -247,14 +248,14 @@ def select_move_minimax(board, color, limit, caching = 0):
 #     if len(possible_moves) == 0 or limit == 0:
 #         return best_move, compute_utility(board, color)
     
-#     if ordering == 1:
-#         moves = []
-#         for j in possible_moves:
-#             moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
-#         ordered_moves = sorted(moves, key=lambda x: -x[1])
-#         possible_moves = []
-#         for k in ordered_moves:
-#             possible_moves.append(k[0])
+    if ordering == 1:
+        moves = []
+        for j in possible_moves:
+            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+        ordered_moves = sorted(moves, key=lambda x: -x[1])
+        possible_moves = []
+        for k in ordered_moves:
+            possible_moves.append(k[0])
 
         
 #     for i in possible_moves:
@@ -296,19 +297,19 @@ def select_move_minimax(board, color, limit, caching = 0):
 #     alpha = float('-inf')
 #     beta = float('inf')
 
-#     if caching == 1:
-#         cache.clear()
-#     else: caching = 0
+    if caching == 1:
+        cache.clear()
+    else: caching = 0
 
-#     if ordering == 1:
-#         moves = []
-#         for j in possible_moves:
-#             moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
-#         ordered_moves = sorted(moves, key=lambda x: -x[1])
-#         possible_moves = []
-#         for k in ordered_moves:
-#             possible_moves.append(k[0])
-#     else: ordering = 0
+    if ordering == 1:
+        moves = []
+        for j in possible_moves:
+            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+        ordered_moves = sorted(moves, key=lambda x: -x[1])
+        possible_moves = []
+        for k in ordered_moves:
+            possible_moves.append(k[0])
+    else: ordering = 0
 
     
 #     for i in possible_moves:
