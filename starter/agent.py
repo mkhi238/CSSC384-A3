@@ -6,7 +6,6 @@ import random
 import sys
 import time
 
-from tests import *
 # You can use the functions from othello_shared to write your AI
 from othello_shared import find_lines, get_possible_moves, get_score, play_move
 
