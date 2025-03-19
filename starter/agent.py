@@ -69,182 +69,220 @@ def compute_heuristic(board, color):
 
 
 
-# TODO: Comments needed
-def ordered_moves(board, moves, color, current_player):
-    '''This is for ordering possible moves'''
-    dic = dict()
-    result = []
-    for move in moves:
-        (column, row) = move
-        new_board = play_move(board, current_player, column, row)
-        successor_utility = compute_utility(new_board, color)
-        if successor_utility in dic and dic[successor_utility] != [move]:
-            dic[successor_utility].append(move)
-        else:
-            dic[successor_utility] = [move]
-    ordered_utility = sorted(list(dic.keys()), reverse=True)
-    for utility in ordered_utility:
-        result += dic[utility]
-    return result
-
-
 ############ MINIMAX ###############################
-def minimax_min_node(board, color, limit, caching=0):
-    # Get the opponent
-    if color == 1:
-        opponent = 2
-    else:
-        opponent = 1
-    # Check cache
-    if caching and board in cache:
-        return cache[board]
-    best_move = None
-    possible_moves = get_possible_moves(board, opponent)
-    if len(possible_moves) == 0 or limit == 0:
-        # fixed utility in the end
-        return None, compute_utility(board, color)
-
-    minUtility = float('inf')
-    for move in possible_moves:
-        # Get the new board
-        (column, row) = move
-        new_board = play_move(board, opponent, column, row)
-
-        # Compute utility
-        _, utility = minimax_max_node(new_board, color, limit - 1, caching)
-        # Cache then new board
-        if caching:
-            cache[new_board] = (move, utility)
-        if utility < minUtility:
-            best_move = move
-            minUtility = utility
-    return best_move, minUtility
-
-
-def minimax_max_node(board, color, limit, caching=0):  # returns highest possible utility
-    # Check cache
-    if caching and board in cache:
-        return cache[board]
-    best_move = None
-    possible_moves = get_possible_moves(board, color)
-
-    if len(possible_moves) == 0 or limit == 0:
-        # fixed utility in the end
-        return None, compute_utility(board, color)
-
-    maxUtility = -float('inf')
-    for move in possible_moves:
-        # Get the new board
-        (column, row) = move
-        new_board = play_move(board, color, column, row)
-
-        # Compute utility
-        _, utility = minimax_min_node(new_board, color, limit - 1, caching)
-        # Cache then new board
-        if caching:
-            cache[new_board] = (move, utility)
-        if utility > maxUtility:
-            best_move = move
-            maxUtility = utility
-    return best_move, maxUtility
-
-
-def select_move_minimax(board, color, limit, caching=0):
+def minimax_min_node(board, color, limit, caching = 0):
+    # IMPLEMENT!
     """
-    Given a board and a player color, decide on a move. 
-    The return value is a tuple of integers (i,j), where
-    i is the column and j is the row on the board.  
+    A helper function for minimax that finds the lowest possible utility
+    """
+    # HINT:
+    # 1. Get the allowed moves
+    # 2. Check if w are at terminal state
+    # 3. If not, for each possible move, get the max utiltiy
+    # 4. After checking every move, you can find the minimum utility
+    # ...
+    if caching == 1:
+        if board in cache:
+            return cache[board]
 
+    opp = 3 - color
+    possible_moves = get_possible_moves(board, opp)
+    highest_util = []
+    moves_list = []
+    best_move = None
+    utility = None
+
+    if len(possible_moves) == 0 or limit == 0:
+        return best_move, compute_utility(board, color)
+
+    for i in possible_moves:
+        next_move = play_move(board, opp, i[0], i[1])
+        _, util = minimax_max_node(next_move, color, limit - 1, caching)
+        moves_list.append((i, util))
+        highest_util.append(util)
+        if caching == 1:
+            if i not in cache:
+                cache[next_move] = (i,util)
+
+    idx = highest_util.index(min(highest_util))
+    best_move = moves_list[idx][0]
+    utility = moves_list[idx][1]
+    return best_move, utility
+
+
+def minimax_max_node(board, color, limit, caching = 0):
+    # IMPLEMENT!
+    """
+    A helper function for minimax that finds the highest possible utility
+    """
+    # HINT:
+    # 1. Get the allowed moves
+    # 2. Check if w are at terminal state
+    # 3. If not, for each possible move, get the min utiltiy
+    # 4. After checking every move, you can find the maximum utility
+    # ...
+    if caching == 1:
+        if board in cache:
+            return cache[board]
+        
+    possible_moves = get_possible_moves(board, color)
+    lowest_util = []
+    moves_list = []
+    best_move = None
+    utility = None
+
+    if len(possible_moves) == 0 or limit == 0:
+        return best_move, compute_utility(board, color)
+
+    for i in possible_moves:
+        next_move = play_move(board, color, i[0], i[1])
+        _, util = minimax_min_node(next_move, color, limit - 1, caching)
+        moves_list.append([i, util])
+        lowest_util.append(util)
+        if caching == 1:
+            if i not in cache:
+                cache[next_move] = (i,util)
+
+    idx = lowest_util.index(max(lowest_util))
+    best_move = moves_list[idx][0]
+    utility = moves_list[idx][1]
+    return best_move, utility
+
+    
+def select_move_minimax(board, color, limit, caching = 0):
+    print(caching)
+    # IMPLEMENT!
+    """
+    Given a board and a player color, decide on a move using Minimax algorithm. 
     Note that other parameters are accepted by this function:
     If limit is a positive integer, your code should enfoce a depth limit that is equal to the value of the parameter.
     Search only to nodes at a depth-limit equal to the limit.  If nodes at this level are non-terminal return a heuristic 
     value (see compute_utility)
     If caching is ON (i.e. 1), use state caching to reduce the number of state evaluations.
-    If caching is OFF (i.e. 0), do NOT use state caching to reduce the number of state evaluations.    
+    If caching is OFF (i.e. 0), do NOT use state caching to reduce the number of state evaluations.
+    INPUT: a game state, the player that is in control, the depth limit for the search, and a flag determining whether state caching is on or not
+    OUTPUT: a tuple of integers (i,j) representing a move, where i is the column and j is the row on the board.
     """
-    # IMPLEMENT
-    cache.clear()
-    best_move, best_utility = minimax_max_node(board, color, limit, caching)
+    if caching == 1:
+        cache.clear()
+    else: caching = 0
+
+    possible_moves = get_possible_moves(board, color)
+    best_move = None
+    max_util = float('-inf')
+    
+    for i in possible_moves:
+        next_move = play_move(board, color, i[0], i[1])
+        _, util = minimax_min_node(next_move, color, limit - 1, caching)
+        if util > max_util:
+            max_util = util
+            best_move = i
+            if caching == 1:
+                if i not in cache:
+                    cache[next_move] = (i,util)
     return best_move
 
-
 ############ ALPHA-BETA PRUNING #####################
-def alphabeta_min_node(board, color, alpha, beta, limit, caching=0, ordering=0):
-    # Get the opponent
-    if color == 1:
-        opponent = 2
-    else:
-        opponent = 1
-    # Check cache
-    if caching and board in cache:
-        return cache[board]
-    best_move = None
-    possible_moves = get_possible_moves(board, opponent)
-    if len(possible_moves) == 0 or limit == 0:
-        # fixed utility in the end
-        return None, compute_utility(board, color)
-
-    minUtility = float('inf')
-    for move in possible_moves:
-        # Get the new board
-        (column, row) = move
-        new_board = play_move(board, opponent, column, row)
-
-        # Compute utility
-        _, utility = alphabeta_max_node(new_board, color, alpha, beta, limit - 1, caching, ordering)
-        # Cache then new board
-        if caching:
-            cache[new_board] = (move, utility)
-        if utility < minUtility:
-            best_move = move
-            minUtility = utility
-        # Conducting alpha-beta pruning
-        beta = min(beta, utility)
-        if beta <= alpha:
-            break
-    return best_move, minUtility
-
-
-def alphabeta_max_node(board, color, alpha, beta, limit, caching=0, ordering=0):
-    # Check cache
-    if caching and board in cache:
-        return cache[board]
-    best_move = None
-    possible_moves = get_possible_moves(board, color)
-
-    if len(possible_moves) == 0 or limit == 0:
-        # fixed utility in the end
-        return None, compute_utility(board, color)
-
-    maxUtility = -float('inf')
-    if ordering:
-        possible_moves = ordered_moves(board, possible_moves, color, color)
-    for move in possible_moves:
-        # Get the new board
-        (column, row) = move
-        new_board = play_move(board, color, column, row)
-
-        # Compute utility
-        _, utility = alphabeta_min_node(new_board, color, alpha, beta, limit - 1, caching, ordering)
-        # Cache then new board
-        if caching:
-            cache[new_board] = (move, utility)
-        if utility > maxUtility:
-            best_move = move
-            maxUtility = utility
-        # Conducting alpha-beta pruning
-        alpha = max(alpha, utility)
-        if beta <= alpha:
-            break
-    return best_move, maxUtility
-
-
-def select_move_alphabeta(board, color, limit, caching=0, ordering=0):
+def alphabeta_min_node(board, color, alpha, beta, limit, caching = 0, ordering = 0):
+    
+    # IMPLEMENT!
     """
-    Given a board and a player color, decide on a move. 
-    The return value is a tuple of integers (i,j), where
-    i is the column and j is the row on the board.  
+    A helper function for alpha-beta that finds the lowest possible utility (don't forget to utilize and update alpha and beta!)
+    """
+    opp = 3 - color
+    possible_moves = get_possible_moves(board, opp)
+    highest_util = []
+    moves_list = []
+    best_move = None
+    utility = None
 
+    if caching == 1:
+        if board in cache:
+            return cache[board]
+    
+    if len(possible_moves) == 0 or limit == 0:
+        return best_move, compute_utility(board, color)
+    
+    if ordering == 1:
+        moves = []
+        for j in possible_moves:
+            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+        ordered_moves = sorted(moves, key=lambda x: -x[1])
+        possible_moves = []
+        for k in ordered_moves:
+            possible_moves.append(k[0])
+
+
+    for i in possible_moves:
+        next_move = play_move(board, opp, i[0], i[1])
+        _, util = alphabeta_max_node(next_move, color, alpha, beta, limit - 1, caching, ordering)
+        moves_list.append((i, util))
+        highest_util.append(util)
+        beta = min(beta, util)
+        if beta <= alpha:
+            break
+
+
+    idx = highest_util.index(min(highest_util))
+    best_move = moves_list[idx][0]
+    utility = moves_list[idx][1]
+
+    if caching == 1:
+        cache[board] = (best_move, utility)
+
+    return best_move, utility
+
+
+
+def alphabeta_max_node(board, color, alpha, beta, limit, caching = 0, ordering = 0):
+    # IMPLEMENT!
+    """
+    A helper function for alpha-beta that finds the highest possible utility (don't forget to utilize and update alpha and beta!)
+    """
+    possible_moves = get_possible_moves(board, color)
+    lowest_util = []
+    moves_list = []
+    best_move = None
+    utility = None
+    if caching == 1:
+        if board in cache:
+            return cache[board]
+
+    if len(possible_moves) == 0 or limit == 0:
+        return best_move, compute_utility(board, color)
+    
+    if ordering:
+        moves = []
+        for j in possible_moves:
+            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+        ordered_moves = sorted(moves, key=lambda x: -x[1])
+        possible_moves = []
+        for k in ordered_moves:
+            possible_moves.append(k[0])
+
+        
+    for i in possible_moves:
+        next_move = play_move(board, color, i[0], i[1])
+        _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching, ordering)
+        moves_list.append((i, util))
+        lowest_util.append(util)
+        alpha = max(alpha, util)
+        if alpha >= beta:
+            break
+    
+    idx = lowest_util.index(max(lowest_util))
+    best_move = moves_list[idx][0]
+    utility = moves_list[idx][1]
+
+    if caching:
+        cache[board] = (best_move, utility)
+
+    return best_move, utility
+
+def select_move_alphabeta(board, color, limit = -1, caching = 0, ordering = 0):
+    # IMPLEMENT!
+    """
+    Given a board and a player color, decide on a move using Alpha-Beta algorithm. 
     Note that other parameters are accepted by this function:
     If limit is a positive integer, your code should enfoce a depth limit that is equal to the value of the parameter.
     Search only to nodes at a depth-limit equal to the limit.  If nodes at this level are non-terminal return a heuristic 
@@ -253,10 +291,39 @@ def select_move_alphabeta(board, color, limit, caching=0, ordering=0):
     If caching is OFF (i.e. 0), do NOT use state caching to reduce the number of state evaluations.    
     If ordering is ON (i.e. 1), use node ordering to expedite pruning and reduce the number of state evaluations. 
     If ordering is OFF (i.e. 0), do NOT use node ordering to expedite pruning and reduce the number of state evaluations. 
+    INPUT: a game state, the player that is in control, the depth limit for the search, a flag determining whether state caching is on or not, a flag determining whether node ordering is on or not
+    OUTPUT: a tuple of integers (i,j) representing a move, where i is the column and j is the row on the board.
     """
-    # IMPLEMENT
-    cache.clear()
-    best_move, best_utility  = alphabeta_max_node(board, color, -float('inf'), float('inf'), limit, caching, ordering)
+    possible_moves = get_possible_moves(board, color)
+    best_move = None
+    max_util = float('-inf')
+    alpha = float('-inf')
+    beta = float('inf')
+
+    if caching:
+        cache.clear()
+
+    if ordering:
+        moves = []
+        for j in possible_moves:
+            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+        ordered_moves = sorted(moves, key=lambda x: -x[1])
+        possible_moves = []
+        for k in ordered_moves:
+            possible_moves.append(k[0])
+
+    
+    for i in possible_moves:
+        next_move = play_move(board, color, i[0], i[1])
+        _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching, ordering)
+        if util > max_util:
+            max_util = util
+            best_move = i
+
+        alpha = max(alpha, util)
+        if beta <= alpha:
+            break
+
     return best_move
 
 ####################################################
