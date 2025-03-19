@@ -83,7 +83,8 @@ def minimax_min_node(board, color, limit, caching = 0):
     # ...
     if caching == 1 and board in cache:
         return cache[board]
-
+    
+    
     opp = 3 - color
     possible_moves = get_possible_moves(board, opp)
     highest_util = []
@@ -96,7 +97,10 @@ def minimax_min_node(board, color, limit, caching = 0):
 
     for i in possible_moves:
         next_move = play_move(board, opp, i[0], i[1])
-        _, util = minimax_max_node(next_move, color, limit - 1, caching)
+        if caching == 1:
+            _, util = minimax_max_node(next_move, color, limit - 1, caching = 1)
+        else:
+            _, util = minimax_max_node(next_move, color, limit - 1, caching=0)
         moves_list.append((i, util))
         highest_util.append(util)
 
@@ -135,7 +139,10 @@ def minimax_max_node(board, color, limit, caching = 0):
 
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        _, util = minimax_min_node(next_move, color, limit - 1, caching)
+        if caching == 1:
+            _, util = minimax_min_node(next_move, color, limit - 1, caching = 1)
+        else:
+            _, util = minimax_min_node(next_move, color, limit - 1, caching = 0)
         moves_list.append([i, util])
         lowest_util.append(util)
 
@@ -165,7 +172,7 @@ def select_move_minimax(board, color, limit, caching = 0):
     OUTPUT: a tuple of integers (i,j) representing a move, where i is the column and j is the row on the board.
     """
     if caching == 1:
-        cache.clear()  # Only clear cache if caching is enabled
+        cache.clear()  
 
     possible_moves = get_possible_moves(board, color)
     best_move = None
@@ -173,10 +180,14 @@ def select_move_minimax(board, color, limit, caching = 0):
     
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        _, util = minimax_min_node(next_move, color, limit - 1, caching)
+        if caching == 1:
+            _, util = minimax_min_node(next_move, color, limit - 1, caching = 1)
+        else:
+            _, util = minimax_min_node(next_move, color, limit - 1, caching = 0)
         if util > max_util:
             max_util = util
             best_move = i
+
     if caching == 1:
         cache[board] = (best_move, max_util)
     return best_move
@@ -212,7 +223,14 @@ def alphabeta_min_node(board, color, alpha, beta, limit, caching = 0, ordering =
 
     for i in possible_moves:
         next_move = play_move(board, opp, i[0], i[1])
-        _, util = alphabeta_max_node(next_move, color, alpha, beta, limit - 1, caching, ordering)
+        if caching == 1 and ordering == 1:
+            _, util = alphabeta_max_node(next_move, color, alpha, beta, limit - 1, caching = 1, ordering = 1)
+        elif caching == 1 and ordering == 0:
+            _, util = alphabeta_max_node(next_move, color, alpha, beta, limit - 1, caching = 1, ordering = 0)
+        elif caching == 0 and ordering == 1:
+            _, util = alphabeta_max_node(next_move, color, alpha, beta, limit - 1, caching = 0, ordering = 1)
+        else:
+            _, util = alphabeta_max_node(next_move, color, alpha, beta, limit - 1, caching = 0, ordering = 0)
         moves_list.append((i, util))
         highest_util.append(util)
         beta = min(beta, util)
@@ -259,7 +277,14 @@ def alphabeta_max_node(board, color, alpha, beta, limit, caching = 0, ordering =
         
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching, ordering)
+        if caching == 1 and ordering == 1:
+            _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching = 1, ordering = 1)
+        elif caching == 1 and ordering == 0:
+            _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching = 1, ordering = 0)
+        elif caching == 0 and ordering == 1:
+            _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching = 0, ordering = 1)
+        else:
+            _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching= 0, ordering = 0)
         moves_list.append((i, util))
         lowest_util.append(util)
         alpha = max(alpha, util)
@@ -311,7 +336,14 @@ def select_move_alphabeta(board, color, limit = -1, caching = 0, ordering = 0):
     
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
-        _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching, ordering)
+        if caching == 1 and ordering == 1:
+            _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching = 1, ordering = 1)
+        elif caching == 1 and ordering == 0:
+            _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching = 1, ordering = 0)
+        elif caching == 0 and ordering == 1:
+            _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching = 0, ordering = 1)
+        else:
+            _, util = alphabeta_min_node(next_move, color, alpha, beta, limit - 1, caching = 0, ordering = 0)
         if util > max_util:
             max_util = util
             best_move = i
