@@ -38,21 +38,44 @@ def compute_heuristic(board, color):
     Method to heuristic value of board, to be used if we are at a depth limit.
     INPUT: a game state and the player that is in control
     OUTPUT: an integer that represents heuristic value
+    ____________________________________________________________________________
+    I got a lot of inspiration for things to add from the following: 
+    https://courses.cs.washington.edu/courses/cse573/04au/Project/mini1/RUSSIA/miniproject1_vaishu_muthu/Paper/Final_Paper.pdf
+
+
+    My heuristic does 3 things: 
+    1. First, it calculates the utility value (or coin parity) of the board at a particular state
+    This is equivalent to the compute utility fuction seen above, which is just the difference in 
+    coins between players
+    2. THe second is finding the mobility, or the number of possible moves that you have versus your 
+    opponenet. 
+    3. Finally, I have a function which provides different strategies based on if it is the early, 
+    mid, or late game. If it is the early game, we value mobility more. If it is the mid game, we value
+    both equally, while if it is the late game, we value having more utility. 
     """
 
+    #Compute the utility of the board
     util = compute_utility(board, color)
 
+    #Compute the stability of the board
     mobility = len(get_possible_moves(board, color)) - len(get_possible_moves(board,3-color))
 
-
+    #Get the current total score to determine if it is early, mid, or late game
     p1_score, p2_score = get_score(board)
     total_score = p1_score + p2_score
 
+    #Adjust weights based on if we are in early, mid, or late game
+    #If in early game (meaning less than 20 coins on the board total)
     if total_score < 20:
+        #Value mobility more
         hval = 2*util + 15*mobility 
+    #If in mid game (meaning more than 20 coins but less than 40 coins on the board total)
     elif total_score>20 and total_score <40:
+        #Value both equally
         hval = 10*util + 10*mobility 
+    #If in late game (meaning more than 40 coins on the board board total)
     else:
+        #Valeu utility more
         hval = 20*util + 5*mobility 
     return hval
 
