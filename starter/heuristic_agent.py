@@ -84,7 +84,7 @@ def minimax_min_node(board, color, limit, caching = 0):
     utility = None
 
     if len(possible_moves) == 0 or limit == 0:
-        return best_move, compute_utility(board, color)
+        return best_move, compute_heuristic(board, color)
 
     for i in possible_moves:
         next_move = play_move(board, opp, i[0], i[1])
@@ -126,7 +126,7 @@ def minimax_max_node(board, color, limit, caching = 0):
     utility = None
 
     if len(possible_moves) == 0 or limit == 0:
-        return best_move, compute_utility(board, color)
+        return best_move, compute_heuristic(board, color)
 
     for i in possible_moves:
         next_move = play_move(board, color, i[0], i[1])
@@ -200,12 +200,12 @@ def alphabeta_min_node(board, color, alpha, beta, limit, caching = 0, ordering =
         return cache[board]
     
     if len(possible_moves) == 0 or limit == 0:
-        return best_move, compute_utility(board, color)
+        return best_move, compute_heuristic(board, color)
     
     if ordering == 1:
         moves = []
         for j in possible_moves:
-            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+            moves.append((j, compute_heuristic(play_move(board, color, j[0], j[1]), color)))
         ordered_moves = sorted(moves, key=lambda x: -x[1])
         possible_moves = []
         for k in ordered_moves:
@@ -254,12 +254,12 @@ def alphabeta_max_node(board, color, alpha, beta, limit, caching = 0, ordering =
         return cache[board]
 
     if len(possible_moves) == 0 or limit == 0:
-        return best_move, compute_utility(board, color)
+        return best_move, compute_heuristic(board, color)
     
     if ordering == 1:
         moves = []
         for j in possible_moves:
-            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+            moves.append((j, compute_heuristic(play_move(board, color, j[0], j[1]), color)))
         ordered_moves = sorted(moves, key=lambda x: -x[1])
         possible_moves = []
         for k in ordered_moves:
@@ -318,7 +318,7 @@ def select_move_alphabeta(board, color, limit = -1, caching = 0, ordering = 0):
     if ordering == 1:
         moves = []
         for j in possible_moves:
-            moves.append((j, compute_utility(play_move(board, color, j[0], j[1]), color)))
+            moves.append((j, compute_heuristic(play_move(board, color, j[0], j[1]), color)))
         ordered_moves = sorted(moves, key=lambda x: -x[1])
         possible_moves = []
         for k in ordered_moves:
